@@ -26,20 +26,20 @@ In this assignment, we created the foundational 3D environment for a legendary v
 ## Assignment 2: The Pub Interior & Character Animations
 **Status:** In Progress 🚧
 
-This assignment expands one of the village buildings into a fully furnished, multi-story pub with animated NPCs and audio[cite: 3].
-- **Goal:** Design an interior space and implement character animations with state transitions[cite: 3].
+This assignment expands one of the village buildings into a fully furnished, multi-story pub with animated NPCs and audio.
+- **Goal:** Design an interior space and implement character animations with state transitions.
 - **Requirements:**
-  - Convert one of the houses from Assignment 1 into a pub[cite: 3].
-  - Furnish the interior with tables, chairs, a fireplace, lighting, and other relevant props[cite: 3].
-  - Add NPC characters with appropriate animations[cite: 3].
-  - Include background music and character voice audio[cite: 3].
-  - Build a second floor connected by stairs[cite: 3].
-  - Configure Animator transitions (e.g., transitioning from walking to stopping, sitting down, or walking up/down stairs)[cite: 3].
+  - Convert one of the houses from Assignment 1 into a pub.
+  - Furnish the interior with tables, chairs, a fireplace, lighting, and other relevant props.
+  - Add NPC characters with appropriate animations.
+  - Include background music and character voice audio.
+  - Build a second floor connected by stairs.
+  - Configure Animator transitions (e.g., transitioning from walking to stopping, sitting down, or walking up/down stairs).
 - **Extra Implemented Features (Ahead of schedule):**
   - Custom C# scripts for interactive doors with proximity detection (`OnTriggerEnter`/`OnTriggerExit`).
   - Dynamic UI Prompts ("Press E to interact") that appear only when in range.
   - Automated door closing when the player leaves the interaction zone.
-- **Note:** Submission is via a gameplay video recording within two weeks of the assignment distribution[cite: 3].
+- **Note:** Submission is via a gameplay video recording within two weeks of the assignment distribution.
 
 ---
 
