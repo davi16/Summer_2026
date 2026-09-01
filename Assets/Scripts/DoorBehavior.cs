@@ -9,6 +9,8 @@ public class DoorBehavior : MonoBehaviour
     
     public GameObject actionText; 
 
+    public BoxCollider solidCollider;
+
     private bool isNear = false;
     private bool isOpen = false;
 
@@ -29,6 +31,8 @@ public class DoorBehavior : MonoBehaviour
         {
             isOpen = true;
             animator.SetBool("Open", isOpen); 
+
+            if (solidCollider != null) { solidCollider.enabled = false; }
 
             if (openSound != null)
             {
@@ -74,6 +78,8 @@ public class DoorBehavior : MonoBehaviour
             {
                 isOpen = false;
                 animator.SetBool("Open", isOpen);
+
+                if (solidCollider != null) { solidCollider.enabled = true; }
 
                 if (closeSound != null)
                 {
