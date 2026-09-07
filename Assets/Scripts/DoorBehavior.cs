@@ -26,11 +26,10 @@ public class DoorBehavior : MonoBehaviour
 
     void Update()
     {
-        // הפתיחה תתבצע רק אם השחקן קרוב, לחץ על E, והדלת עדיין סגורה
+        // Check if the player is near the door and presses the "E" key to open it
         if (isNear && Input.GetKeyDown(KeyCode.E) && !isOpen)
         {
-            isOpen = true;
-            animator.SetBool("Open", isOpen); 
+            animator.SetBool("Open", !isOpen); 
 
             if (solidCollider != null) { solidCollider.enabled = false; }
 
@@ -39,7 +38,7 @@ public class DoorBehavior : MonoBehaviour
                 audioSource.PlayOneShot(openSound);
             }
             
-            // מעלימים את הטקסט מיד עם הפתיחה
+            // Set the door state to open
             if (actionText != null) 
             {
                 actionText.SetActive(false);
@@ -53,7 +52,7 @@ public class DoorBehavior : MonoBehaviour
         {
             isNear = true;
             
-            // מציגים את הטקסט כשמתקרבים רק אם הדלת סגורה
+            // Always show the action text when the player is near the door, regardless of whether it's open or closed
             if (actionText != null && !isOpen)
             {
                 actionText.SetActive(true); 
@@ -67,13 +66,13 @@ public class DoorBehavior : MonoBehaviour
         {
             isNear = false;
             
-            // תמיד מעלימים את הטקסט כשמתרחקים
+            // Always remove the action text when the player moves away from the door
             if (actionText != null)
             {
                 actionText.SetActive(false); 
             }
 
-            // סגירה אוטומטית ברגע שהשחקן עוזב את אזור ה-Collider
+            // Automatic closing when the player leaves the collider area
             if (isOpen)
             {
                 isOpen = false;

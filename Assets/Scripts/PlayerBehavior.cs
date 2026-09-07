@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerBehavior : MonoBehaviour
 {
@@ -7,6 +8,13 @@ public class PlayerBehavior : MonoBehaviour
     public float sprintSpeed = 15f;  // original sprinting speed
     private float currentSpeed;      // helper variable to store the current speed
     float angular_speed = 3;
+    public GameObject Drawer; // only in pub scene
+    public GameObject RegularCrosshair; // only in pub scene
+    public GameObject TouchCrosshair; // only in pub scene
+    public GameObject Drawertext; // only in pub scene
+    public GameObject GunInDrawer; // only in pub scene
+    public GameObject GunInHand; // only in pub scene
+    public GameObject PickGunText; // only in pub scene
 
     CharacterController controller;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -53,5 +61,46 @@ public class PlayerBehavior : MonoBehaviour
 
         // the multiplication by Time.deltaTime is necessary to make the movement frame-rate independent, ensuring consistent movement speed regardless of the frame rate.
         controller.Move(motion * Time.deltaTime);
+
+        // check the sight of player
+        if (SceneManager.GetActiveScene().buildIndex == 1) // Assuming "Pub" scene has build index 1
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(PlayerCamera.transform.position, PlayerCamera.transform.forward, out hit, 3f))
+            {
+                if (hit.collider.gameObject == Drawer)
+                {
+                    RegularCrosshair.SetActive(false);
+                    TouchCrosshair.SetActive(true);
+                    Drawertext.SetActive(true);
+                    if (Input.GetKeyDown(KeyCode.E))
+                    {
+                        GameObject Cabinet = Drawer.transform.parent.gameObject; // get the parent of the drawer, which is the cabinet
+                        Animator animator = Cabinet.GetComponent<Animator>();
+                        animator.SetBool("Open", !animator.GetBool("Open")); // toggle the "Open" parameter
+                        if (animator.GetBool("Open"))
+                        {
+                            Collider GunCollider = GunInDrawer.GetComponent<Collider>();
+                            GunCollider.enabled = true; // enable the collider of the gun when the cabinet is open
+                        }
+                    }
+                }
+                else{
+                    RegularCrosshair.SetActive(true);
+                    TouchCrosshair.SetActive(false);
+                    Drawertext.SetActive(false);
+                    if (hit.collider.gameObject == GunInDrawer)
+                    {
+                        PickGunText.SetActive(true);
+                        if (Input.GetKeyDown(KeyCode.E))
+                        {
+                            GunInDrawer.SetActive(false); // hide the gun when picked up
+                            GunInHand.SetActive(true); // show the gun in hand when picked up
+                            PickGunText.SetActive(false); // hide the pick gun text when the gun is picked up
+                        }
+                    }
+                }
+            }
+        }
     }
 }
