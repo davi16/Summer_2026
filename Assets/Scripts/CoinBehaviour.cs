@@ -7,28 +7,40 @@ public class CoinBehaviour : MonoBehaviour
     public GameObject AllCoins;
     public static int NumCoins = 0;
     public Text CoinsText;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
     void Start()
     {
+        NumCoins = 0;
+        // if the CoinsText is not null, update its text to show the current number of coins collected
+        if (CoinsText != null)
+        {
+            CoinsText.gameObject.SetActive(false);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     private void OnTriggerEnter(Collider other)
     {
-        // only player can collect coins
-        if (other.gameObject == Player.gameObject)
+        // check if the player collides with the coin
+        if (other.CompareTag("Player"))
         {
-            NumCoins++;  // counts collected coins
-            CoinsText.text = "Gold: "+NumCoins.ToString();
+            NumCoins++;  // increment the coin count
 
-            gameObject.SetActive(false);
-            AudioSource sound = AllCoins.GetComponent<AudioSource>();
-            sound.Play();
+            // activate the coin text and update the number
+            if (CoinsText != null)
+            {
+                CoinsText.gameObject.SetActive(true);
+                CoinsText.text = "Gold: " + NumCoins.ToString();
+            }
+
+            // play the coin collection sound
+            if (AllCoins != null)
+            {
+                AudioSource sound = AllCoins.GetComponent<AudioSource>();
+                if (sound != null) { sound.Play(); }
+            }
      
+            // deactivate the coin object
+            gameObject.SetActive(false);
         }
     }
 }

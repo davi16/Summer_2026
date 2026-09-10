@@ -24,7 +24,7 @@ In this assignment, we created the foundational 3D environment for a legendary v
 ---
 
 ## Assignment 2: The Pub Interior & Character Animations
-**Status:** In Progress 🚧
+**Status:** Completed ✅
 
 This assignment expands one of the village buildings into a fully furnished, multi-story pub with animated NPCs and audio.
 - **Goal:** Design an interior space and implement character animations with state transitions.
@@ -36,10 +36,12 @@ This assignment expands one of the village buildings into a fully furnished, mul
   - Build a second floor connected by stairs.
   - Configure Animator transitions (e.g., transitioning from walking to stopping, sitting down, or walking up/down stairs).
 - **Extra Implemented Features (Ahead of schedule):**
-  - Custom C# scripts for interactive doors with proximity detection (`OnTriggerEnter`/`OnTriggerExit`).
-  - Dynamic UI Prompts ("Press E to interact") that appear only when in range.
-  - Automated door closing when the player leaves the interaction zone.
-- **Note:** Submission is via a gameplay video recording within two weeks of the assignment distribution.
+  - **Advanced AI:** Autonomous animal NPCs featuring Raycast obstacle avoidance, curved wandering paths, and a proximity-based fleeing system.
+  - **Interactive Portals:** Custom scene transitions requiring explicit player input ('E'), synced with animation/sound delays, and integrated with a `PersistentObjectManager` for accurate spawn point saving.
+  - **Collision Optimization:** Smooth stair climbing mechanics utilizing invisible ramp colliders.
+  - **Environment Polish:** Terrain leveling (`Set Height`) for stable building foundations, optimized 3D audio sources, and lightweight particle systems for realistic candle flames.
+  - **Smart Interaction:** Custom C# scripts for interactive doors and drawers with proximity detection and automated state resets.
+- **Note:** Submission is via a gameplay video recording.
 
 ---
 

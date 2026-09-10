@@ -15,6 +15,7 @@ public class PlayerBehavior : MonoBehaviour
     public GameObject GunInDrawer; // only in pub scene
     public GameObject GunInHand; // only in pub scene
     public GameObject PickGunText; // only in pub scene
+    public GameObject Alarm; // only in pub scene
 
     CharacterController controller;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -91,12 +92,19 @@ public class PlayerBehavior : MonoBehaviour
                     Drawertext.SetActive(false);
                     if (hit.collider.gameObject == GunInDrawer)
                     {
-                        PickGunText.SetActive(true);
-                        if (Input.GetKeyDown(KeyCode.E))
+                        if (GunInDrawer.gameObject.activeSelf) // check if the gun is active in the drawer
                         {
-                            GunInDrawer.SetActive(false); // hide the gun when picked up
-                            GunInHand.SetActive(true); // show the gun in hand when picked up
-                            PickGunText.SetActive(false); // hide the pick gun text when the gun is picked up
+                            PickGunText.SetActive(true);
+                            if (Input.GetKeyDown(KeyCode.E))
+                            {
+                                GunInDrawer.SetActive(false); // hide the gun when picked up
+                                GunInHand.SetActive(true); // show the gun in hand when picked up
+                                Alarm.SetActive(true); // show the alarm when the gun is picked up
+                                AudioSource alarmAudio = Alarm.GetComponent<AudioSource>();
+                                alarmAudio.Play(); // play the alarm sound when the gun is picked up
+                                PickGunText.SetActive(false); // hide the pick gun text when the gun is picked up
+                                PersistentObjectManager.HasGun = true; // set the HasGun variable in PersistentObjectManager to true
+                            }
                         }
                     }
                 }

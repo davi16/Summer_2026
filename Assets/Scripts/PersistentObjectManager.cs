@@ -7,9 +7,12 @@ public class PersistentObjectManager : MonoBehaviour
 {
     public static PersistentObjectManager Instance = null;
     public static int NumGoldCoins = 0;
+    public static bool HasGun = false;
     public Text CoinsText;
     public static Vector3 SpawnPointPositionScene0 ;
     public GameObject Player;
+    public GameObject Gun;
+    public GameObject GunInDrawer;
     private void Awake()
     {
         if(Instance == null) // for the first time
@@ -26,8 +29,9 @@ public class PersistentObjectManager : MonoBehaviour
             }
         }
 
-        CoinsText.text = "Gold: " + NumGoldCoins;
-
+        CoinsText.text = "Money: " + NumGoldCoins;
+        Gun.SetActive(HasGun);
+        GunInDrawer.SetActive(!HasGun);
         DontDestroyOnLoad(gameObject);
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created

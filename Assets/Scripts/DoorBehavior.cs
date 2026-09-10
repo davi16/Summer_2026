@@ -29,7 +29,8 @@ public class DoorBehavior : MonoBehaviour
         // Check if the player is near the door and presses the "E" key to open it
         if (isNear && Input.GetKeyDown(KeyCode.E) && !isOpen)
         {
-            animator.SetBool("Open", !isOpen); 
+            isOpen = true;
+            animator.SetBool("Open", isOpen); 
 
             if (solidCollider != null) { solidCollider.enabled = false; }
 
