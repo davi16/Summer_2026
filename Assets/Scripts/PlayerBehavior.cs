@@ -22,6 +22,26 @@ public class PlayerBehavior : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>(); // initialization
+        
+        // Hide the cursor and lock it to the center of the screen for a first-person experience
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        // Check if the player is returning to the outdoors scene and set their position accordingly
+        if (SceneManager.GetActiveScene().name == "Outdoors" && PortalBehavior.isReturningToOutdoors)
+        {
+            controller.enabled = false; 
+            
+            // Set the player's position to the saved position from the portal and offset it slightly backward to avoid immediate re-triggering of the portal
+            transform.position = PortalBehavior.savedOutdoorsPosition + (PortalBehavior.savedOutdoorsRotation * Vector3.forward * -1.5f);
+            
+            // Rotate the player by 180 degrees so they look away from the portal!
+            transform.rotation = PortalBehavior.savedOutdoorsRotation * Quaternion.Euler(0, 180f, 0);
+            
+            controller.enabled = true; 
+            
+            PortalBehavior.isReturningToOutdoors = false;
+        }
     }
 
     // Update is called once per frame
