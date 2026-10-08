@@ -4,18 +4,28 @@ using System.Collections;
 
 public class PortalBehavior : MonoBehaviour
 {
-    // Static variables to store the player's position and rotation when transitioning between scenes
+    [Header("Scene Transition")]
+    public string targetSceneName = "Outdoors"; // שם הסצנה שאליה עוברים (ניתן לשינוי ב-Inspector לכל דלת!)
+    public GameObject portalPromptText; // אופציונלי: טקסט "Press E to enter/exit"
+
+    // משתנים סטטיים ששומרים את מיקום הדלת האחרונה שדרכה נכנסנו מהכפר (עובד גם לפאב וגם לבית!)
     public static bool isReturningToOutdoors = false;
     public static Vector3 savedOutdoorsPosition;
     public static Quaternion savedOutdoorsRotation;
+
     private bool isNear = false;
     private Collider playerCollider;
+
+    void Start()
+    {
+        if (portalPromptText != null) portalPromptText.SetActive(false);
+    }
 
     void Update()
     {
         if (isNear && Input.GetKeyDown(KeyCode.E))
         {
-            StartCoroutine(TransitionToScene());
+            StartCoroutine(Transition());
         }
     }
 
@@ -25,6 +35,7 @@ public class PortalBehavior : MonoBehaviour
         {
             isNear = true;
             playerCollider = other;
+            if (portalPromptText != null) portalPromptText.SetActive(true);
         }
     }
 
@@ -34,36 +45,28 @@ public class PortalBehavior : MonoBehaviour
         {
             isNear = false;
             playerCollider = null;
+            if (portalPromptText != null) portalPromptText.SetActive(false);
         }
     }
 
-    private IEnumerator TransitionToScene()
+    private IEnumerator Transition()
     {
         isNear = false;
-        yield return new WaitForSeconds(0.5f);
+        if (portalPromptText != null) portalPromptText.SetActive(false);
 
+        yield return new WaitForSeconds(0.3f);
+
+        // שמירת כמות המטבעות לפני מעבר הסצנה
         PersistentObjectManager.NumGoldCoins = CoinBehaviour.NumCoins;
 
-        if (SceneManager.GetActiveScene().name == "Outdoors")
+        // אם אנחנו כרגע בכפר (Outdoors) ונכנסים למבנה (פאב או בית) - נשמור את המיקום המדויק של הדלת הזו!
+        if (SceneManager.GetActiveScene().name == "Outdoors" && playerCollider != null)
         {
-            // Save the player's position and rotation before transitioning to the Pub scene
             savedOutdoorsPosition = playerCollider.transform.position;
             savedOutdoorsRotation = playerCollider.transform.rotation;
             isReturningToOutdoors = true;
-
-            if (PersistentObjectManager.Instance != null)
-            {
-                PersistentObjectManager.Instance.UpdateSpawnPointScene0(playerCollider.transform.position);
-            }
         }
 
-        if (SceneManager.GetActiveScene().name == "Outdoors")
-        {
-            SceneManager.LoadScene("Pub");
-        }
-        else
-        {
-            SceneManager.LoadScene("Outdoors");
-        }
+        SceneManager.LoadScene(targetSceneName);
     }
 }

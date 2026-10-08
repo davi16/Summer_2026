@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c0f029aa3e46a7d40919c467c9c4f704
+ShaderIncludeImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 292645
+  packageName: KHS - Namhansanseong Fortress
+  packageVersion: 1.0
+  assetPath: Assets/Shaders/UnrealCommon.cginc
+  uploadId: 684640

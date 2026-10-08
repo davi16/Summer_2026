@@ -8,6 +8,7 @@ public class GunFire : MonoBehaviour
     LineRenderer tracer; // LineRenderer component for the tracer effect
     public GameObject muzzle;
     AudioSource gunFire;
+    public MonsterBehavior monster; // Reference to the MonsterBehavior script
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -26,6 +27,11 @@ public class GunFire : MonoBehaviour
                 bullet.transform.position = hit.point;
                 gunFire.Play();
                 StartCoroutine(ShowFlash(hit.point));
+                // check if the hit object has the tag "Monster"
+                if (hit.collider.gameObject.CompareTag("Monster"))
+                {
+                    monster.gettingShot(); // call the gettingShot method on the monster
+                }
             }
         }
     }

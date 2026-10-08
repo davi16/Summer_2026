@@ -1,10 +1,10 @@
 # Game Development - Summer 2026 🎮
 
 **Afeka College of Engineering**  
-**Student:** David Ben Yakov 
+**Students:** David Ben Yakov & Noa Eitan
 
 ## Overview
-This repository contains the assignments and the final project for the Game Development course taken during the Summer 2026 semester. The project focuses on 3D level design, environment building, C# scripting, and interactive game mechanics using the Unity Engine.
+This repository contains the assignments and the final project for the Game Development course taken during the Summer 2026 semester. The project focuses on 3D level design, environment building, C# scripting, AI behaviors, and interactive cross-scene game mechanics using the Unity Engine.
 
 ---
 
@@ -41,21 +41,35 @@ This assignment expands one of the village buildings into a fully furnished, mul
   - **Collision Optimization:** Smooth stair climbing mechanics utilizing invisible ramp colliders.
   - **Environment Polish:** Terrain leveling (`Set Height`) for stable building foundations, optimized 3D audio sources, and lightweight particle systems for realistic candle flames.
   - **Smart Interaction:** Custom C# scripts for interactive doors and drawers with proximity detection and automated state resets.
-- **Note:** Submission is via a gameplay video recording.
+- **Note:** Submission was done via a gameplay video recording.
 
 ---
 
-## Assignment 3: [Placeholder for Assignment 3]
-**Status:** Pending ⏳
+## Assignment 3: Multi-Scene Persistence, Chest & Key Mechanics
+**Status:** Completed ✅
 
-*Details for the third course assignment will be added here once provided.*
+This assignment introduces cross-scene state management, physics-based line-of-sight interactions, and a key-and-lock progression loop across multiple village interiors.
+- **Goal:** Implement an interactive chest-and-key puzzle in a dedicated interior scene (`HouseWithChest`) while maintaining persistent game state across scene transitions.
+- **Features Included:**
+  - **Dedicated Interior Scene (`HouseWithChest`):** Connected to a separate village house via dynamic `PortalBehavior` triggers.
+  - **Cross-Scene State Persistence:** Seamless preservation of collected Gold Coins (`PersistentObjectManager`), weapon states (`HasGun`), and key ownership (`KeyBehavior.HasKey` & `KeyWasCollectedOnce`) when moving between `Outdoors` and interior scenes.
+  - **Smart Player Repositioning:** Automatic saving of the entry door's coordinates and rotation in the village, spawning the player right outside the exited building facing forward upon return.
+  - **Dual-Condition Chest Interaction (`ChestBehavior`):** Requires both physical proximity (`OnTriggerEnter`) and direct line-of-sight (`Physics.Raycast` with trigger filtering) to display UI prompts and trigger the lid opening animation (`SPACE`), sound effects, and dynamic layer switching (`Ignore Raycast`) to reveal the key inside.
+  - **Key & Locked Door System (`KeyBehavior` & `LockedDoorBehavior`):** Collectible key inside the chest that unlocks a specific locked house in the village, displaying context-sensitive UI notifications (locked warning, unlock prompt, and key-used confirmation) and consuming the key from the player's inventory upon unlocking.
+- **Note:** Submission was done via a gameplay video recording.
 
 ---
 
-## Final Project: Complete Playable Game
-**Status:** Pending ⏳
+## Final Project: Bank Heist - Tactical Action Game
+**Status:** In Progress 🚧
 
-*The capstone project for the course. This will evolve our assignments into a fully ready, small-scale playable game. Details to be announced.*
+The capstone project for the course: an interactive 3D "Bank Heist" game combining multi-scene architecture, role selection, and squad-based NPC AI.
+- **Planned Features & Requirements:**
+  - **Interactive Main Menu (`StartPanel`):** Role selection allowing the player to play as a (1) Robber, (2) Police Officer / Security Guard, or (3) Bystander, built with custom `TextMeshPro` styling and UI panels.
+  - **Multi-Scene World Architecture:** Seamless transitions across at least 3 interconnected scenes (City Street, Main Bank Hall, and Vault Room) with full persistence of `HP`, `Gold`, inventory, and NPC states.
+  - **Squad Command & Autonomous NPC AI:** Teammate NPCs powered by `NavMeshAgent` that assist the player/commander (shooting, throwing grenades, retreating) while maintaining formation spacing and avoiding collisions.
+  - **Dynamic Bank Queue & Civilian Reactions:** Civilian NPCs queuing inside the bank who dynamically react and drop to the floor when the heist begins.
+  - **Combat HUD & Minimap:** World-space `HPBar` sliders above characters, real-time combat/victory/defeat notifications, and a top-down `RenderTexture` Minimap with custom layer culling.
 
 ---
 *Repository configured with a strict Unity `.gitignore` to prevent LFS issues and keep commits lightweight.*

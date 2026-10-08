@@ -29,9 +29,16 @@ public class PersistentObjectManager : MonoBehaviour
             }
         }
 
-        CoinsText.text = "Money: " + NumGoldCoins;
-        Gun.SetActive(HasGun);
-        GunInDrawer.SetActive(!HasGun);
+        CoinsText.text = "Gold : " + NumGoldCoins;
+        if (Gun != null)
+        {
+            Gun.SetActive(HasGun); // או כל פעולה שכתובה לך שם בשורה 33
+        }
+        if (GunInDrawer != null)
+        {
+            GunInDrawer.SetActive(!HasGun); // או כל פעולה שכתובה לך שם בשורה 33
+        }
+
         DontDestroyOnLoad(gameObject);
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created

@@ -10,7 +10,6 @@ public class CoinBehaviour : MonoBehaviour
     
     void Start()
     {
-        NumCoins = 0;
         // if the CoinsText is not null, update its text to show the current number of coins collected
         if (CoinsText != null)
         {

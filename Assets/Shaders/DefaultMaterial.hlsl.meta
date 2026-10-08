@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: bdca3d6516ef8bf48952e98c1a90ce2d
+ShaderIncludeImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 292645
+  packageName: KHS - Namhansanseong Fortress
+  packageVersion: 1.0
+  assetPath: Assets/Shaders/DefaultMaterial.hlsl
+  uploadId: 684640

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c33f3fb4d1943f445a7b9cadef339162
+ShaderIncludeImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 292645
+  packageName: KHS - Namhansanseong Fortress
+  packageVersion: 1.0
+  assetPath: Assets/Shaders/PBR_Shader.hlsl
+  uploadId: 684640

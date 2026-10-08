@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 85555e88cd029354586e061105ec4519
+ShaderIncludeImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 292645
+  packageName: KHS - Namhansanseong Fortress
+  packageVersion: 1.0
+  assetPath: Assets/Shaders/LargeWorldCoordinates.hlsl
+  uploadId: 684640

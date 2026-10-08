@@ -3,132 +3,174 @@ using UnityEngine.SceneManagement;
 
 public class PlayerBehavior : MonoBehaviour
 {
-    public GameObject PlayerCamera; // public means that it must be connected in Unity
-    public float walkSpeed = 7.5f;   // walking speed, currently set as half the sprinting speed
-    public float sprintSpeed = 15f;  // original sprinting speed
-    private float currentSpeed;      // helper variable to store the current speed
-    float angular_speed = 3;
-    public GameObject Drawer; // only in pub scene
-    public GameObject RegularCrosshair; // only in pub scene
-    public GameObject TouchCrosshair; // only in pub scene
-    public GameObject Drawertext; // only in pub scene
-    public GameObject GunInDrawer; // only in pub scene
-    public GameObject GunInHand; // only in pub scene
-    public GameObject PickGunText; // only in pub scene
-    public GameObject Alarm; // only in pub scene
+    [Header("Movement Settings")]
+    public GameObject PlayerCamera;
+    public float walkSpeed = 7.5f;
+    public float sprintSpeed = 15f;
+    private float currentSpeed;
+    private float verticalRotation = 0f;
 
-    CharacterController controller;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [Header("Pub Scene References")]
+    public GameObject Drawer;
+    public GameObject RegularCrosshair;
+    public GameObject TouchCrosshair;
+    public GameObject Drawertext;
+    public GameObject GunInDrawer;
+    public GameObject GunInHand;
+    public GameObject PickGunText;
+    public GameObject Alarm;
+    public MonsterBehavior monster;
+
+    private CharacterController controller;
+
     void Start()
     {
-        controller = GetComponent<CharacterController>(); // initialization
-        
-        // Hide the cursor and lock it to the center of the screen for a first-person experience
+        controller = GetComponent<CharacterController>();
+
+        // נעילת והעלמת סמן העכבר
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
-        // Check if the player is returning to the outdoors scene and set their position accordingly
-        if (SceneManager.GetActiveScene().name == "Outdoors" && PortalBehavior.isReturningToOutdoors)
+        // שמירה על הנשק ביד אם השחקן כבר אסף אותו קודם
+        if (PersistentObjectManager.HasGun && GunInHand != null)
         {
-            controller.enabled = false; 
-            
-            // Set the player's position to the saved position from the portal and offset it slightly backward to avoid immediate re-triggering of the portal
-            transform.position = PortalBehavior.savedOutdoorsPosition + (PortalBehavior.savedOutdoorsRotation * Vector3.forward * -1.5f);
-            
-            // Rotate the player by 180 degrees so they look away from the portal!
-            transform.rotation = PortalBehavior.savedOutdoorsRotation * Quaternion.Euler(0, 180f, 0);
-            
-            controller.enabled = true; 
-            
-            PortalBehavior.isReturningToOutdoors = false;
+            GunInHand.SetActive(true);
+        }
+
+        // שיגור השחקן אל מחוץ למבנה עם הפנים קדימה (תומך גם בפאב וגם בבית החדש)
+        if (SceneManager.GetActiveScene().name == "Outdoors")
+        {
+            if (PortalBehavior.isReturningToOutdoors)
+            {
+                RepositionPlayer(PortalBehavior.savedOutdoorsPosition, PortalBehavior.savedOutdoorsRotation);
+                PortalBehavior.isReturningToOutdoors = false;
+            }
         }
     }
 
-    // Update is called once per frame
+    private void RepositionPlayer(Vector3 savedPos, Quaternion savedRot)
+    {
+        if (controller != null) controller.enabled = false;
+        transform.position = savedPos + (savedRot * Vector3.forward * -1.5f);
+        transform.rotation = savedRot * Quaternion.Euler(0, 180f, 0);
+        if (controller != null) controller.enabled = true;
+    }
+
     void Update()
     {
-        // setting the current speed based on whether LeftShift is pressed or not. If LeftShift is pressed, the player will sprint; otherwise, they will walk.
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            currentSpeed = sprintSpeed;
-        }
-        else
-        {
-            currentSpeed = walkSpeed;
-        }
+        HandleMovementAndLook();
 
-        // set the speed to walkSpeed if LeftShift is not pressed, otherwise set it to sprintSpeed
+        // בדיקת אינטראקציה רק אם אנחנו בפאב
+        if (SceneManager.GetActiveScene().name == "Pub")
+        {
+            HandlePubInteractions();
+        }
+    }
+
+    private void HandleMovementAndLook()
+    {
+        // מהירות ריצה / הליכה
+        currentSpeed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed;
+
         float dx = Input.GetAxis("Horizontal") * currentSpeed;
         float dz = Input.GetAxis("Vertical") * currentSpeed;
 
-        float RotationAboutY = Input.GetAxis("Mouse X") * 3f;
-        float RotationAboutX = -Input.GetAxis("Mouse Y") * 3f;
+        // סיבוב מצלמה ושחקן (כולל הגנה אם PlayerCamera ריק)
+        float mouseX = Input.GetAxis("Mouse X") * 3f;
+        float mouseY = Input.GetAxis("Mouse Y") * 3f;
 
-        PlayerCamera.transform.Rotate(RotationAboutX, 0, 0);
-        transform.Rotate(new Vector3(0, RotationAboutY, 0));
+        transform.Rotate(0, mouseX, 0);
 
-        Vector3 motion = new Vector3(dx, 0, dz); 
-        motion = transform.TransformDirection(motion); 
-        
-        // smart gravity: if the player is grounded, we apply a small downward force to keep them grounded; if they are in the air, we apply a realistic gravity force.
-        if (controller.isGrounded)
+        if (PlayerCamera != null)
         {
-            motion.y = -2f; // weak force to keep the player grounded when they are on the ground
-        }
-        else
-        {
-            motion.y = -9.81f; // realistic gravity force when the player is in the air
+            verticalRotation -= mouseY;
+            verticalRotation = Mathf.Clamp(verticalRotation, -80f, 80f); // מונע היפוך של הראש
+            PlayerCamera.transform.localEulerAngles = new Vector3(verticalRotation, 0, 0);
         }
 
-        // the multiplication by Time.deltaTime is necessary to make the movement frame-rate independent, ensuring consistent movement speed regardless of the frame rate.
-        controller.Move(motion * Time.deltaTime);
+        // פיזיקה ותנועה
+        Vector3 motion = transform.TransformDirection(new Vector3(dx, 0, dz));
+        motion.y = (controller != null && controller.isGrounded) ? -2f : -9.81f;
 
-        // check the sight of player
-        if (SceneManager.GetActiveScene().buildIndex == 1) // Assuming "Pub" scene has build index 1
+        if (controller != null && controller.enabled)
         {
-            RaycastHit hit;
-            if (Physics.Raycast(PlayerCamera.transform.position, PlayerCamera.transform.forward, out hit, 3f))
+            CollisionFlags flags = controller.Move(motion * Time.deltaTime);
+            Debug.Log($"Pos: {transform.position} | Flags: {flags} | isGrounded: {controller.isGrounded}");
+            // Debug.Log($"Pos: {transform.position} | Motion: {motion} | dt: {Time.deltaTime} | CC Enabled: {controller.enabled}");
+            // controller.Move(motion * Time.deltaTime);
+        }
+    }
+
+    private void HandlePubInteractions()
+    {
+        if (PlayerCamera == null) return;
+
+        RaycastHit hit;
+        bool hitSomething = Physics.Raycast(PlayerCamera.transform.position, PlayerCamera.transform.forward, out hit, 3f);
+
+        if (hitSomething)
+        {
+            if (Drawer != null && hit.collider.gameObject == Drawer)
             {
-                if (hit.collider.gameObject == Drawer)
+                SetCrosshairState(isInteracting: true);
+                if (Drawertext != null) Drawertext.SetActive(true);
+
+                if (Input.GetKeyDown(KeyCode.E))
                 {
-                    RegularCrosshair.SetActive(false);
-                    TouchCrosshair.SetActive(true);
-                    Drawertext.SetActive(true);
-                    if (Input.GetKeyDown(KeyCode.E))
+                    GameObject cabinet = Drawer.transform.parent.gameObject;
+                    Animator animator = cabinet.GetComponent<Animator>();
+                    if (animator != null)
                     {
-                        GameObject Cabinet = Drawer.transform.parent.gameObject; // get the parent of the drawer, which is the cabinet
-                        Animator animator = Cabinet.GetComponent<Animator>();
-                        animator.SetBool("Open", !animator.GetBool("Open")); // toggle the "Open" parameter
-                        if (animator.GetBool("Open"))
+                        animator.SetBool("Open", !animator.GetBool("Open"));
+                        if (animator.GetBool("Open") && GunInDrawer != null)
                         {
-                            Collider GunCollider = GunInDrawer.GetComponent<Collider>();
-                            GunCollider.enabled = true; // enable the collider of the gun when the cabinet is open
+                            Collider gunCollider = GunInDrawer.GetComponent<Collider>();
+                            if (gunCollider != null) gunCollider.enabled = true;
                         }
                     }
                 }
-                else{
-                    RegularCrosshair.SetActive(true);
-                    TouchCrosshair.SetActive(false);
-                    Drawertext.SetActive(false);
-                    if (hit.collider.gameObject == GunInDrawer)
-                    {
-                        if (GunInDrawer.gameObject.activeSelf) // check if the gun is active in the drawer
-                        {
-                            PickGunText.SetActive(true);
-                            if (Input.GetKeyDown(KeyCode.E))
-                            {
-                                GunInDrawer.SetActive(false); // hide the gun when picked up
-                                GunInHand.SetActive(true); // show the gun in hand when picked up
-                                Alarm.SetActive(true); // show the alarm when the gun is picked up
-                                AudioSource alarmAudio = Alarm.GetComponent<AudioSource>();
-                                alarmAudio.Play(); // play the alarm sound when the gun is picked up
-                                PickGunText.SetActive(false); // hide the pick gun text when the gun is picked up
-                                PersistentObjectManager.HasGun = true; // set the HasGun variable in PersistentObjectManager to true
-                            }
-                        }
-                    }
-                }
+                return;
             }
+            else if (GunInDrawer != null && hit.collider.gameObject == GunInDrawer && GunInDrawer.activeSelf)
+            {
+                SetCrosshairState(isInteracting: true);
+                if (PickGunText != null) PickGunText.SetActive(true);
+
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    GunInDrawer.SetActive(false);
+                    if (GunInHand != null) GunInHand.SetActive(true);
+                    if (Alarm != null)
+                    {
+                        Alarm.SetActive(true);
+                        AudioSource alarmAudio = Alarm.GetComponent<AudioSource>();
+                        if (alarmAudio != null) alarmAudio.Play();
+                    }
+                    if (monster != null) monster.startWalking();
+                    if (PickGunText != null) PickGunText.SetActive(false);
+                    PersistentObjectManager.HasGun = true;
+                }
+                return;
+            }
+        }
+
+        // איפוס תצוגה אם השחקן לא מביט באובייקט רלוונטי
+        SetCrosshairState(isInteracting: false);
+        if (Drawertext != null) Drawertext.SetActive(false);
+        if (PickGunText != null) PickGunText.SetActive(false);
+    }
+
+    private void SetCrosshairState(bool isInteracting)
+    {
+        if (RegularCrosshair != null) RegularCrosshair.SetActive(!isInteracting);
+        if (TouchCrosshair != null) TouchCrosshair.SetActive(isInteracting);
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.gameObject.name != "Floor" && hit.gameObject.name != "Plane")
+        {
+            Debug.Log("Blocked while moving by: " + hit.gameObject.name);
         }
     }
 }

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e7b4a841528b292459a09637dca64fd3
+ShaderIncludeImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 292645
+  packageName: KHS - Namhansanseong Fortress
+  packageVersion: 1.0
+  assetPath: Assets/Shaders/M_Sky_Panning_Clouds2.hlsl
+  uploadId: 684640

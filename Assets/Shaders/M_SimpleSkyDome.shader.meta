@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: abc00000000002763194663732456041
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 292645
+  packageName: KHS - Namhansanseong Fortress
+  packageVersion: 1.0
+  assetPath: Assets/Shaders/M_SimpleSkyDome.shader
+  uploadId: 684640
