@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: RobberOverrideController
+  m_Controller: {fileID: 9100000, guid: 834552b63a5f245818dcea30c1428670, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: -203655887218126122, guid: 834b263987cc04198b966c6044006dcd, type: 3}
+    m_OverrideClip: {fileID: -203655887218126122, guid: 0be96e732489a4b168012903ff94cd32, type: 3}
+  - m_OriginalClip: {fileID: -203655887218126122, guid: 0712a13843b264e789dcde76e676dea1, type: 3}
+    m_OverrideClip: {fileID: -203655887218126122, guid: de49f7e870a7a47259cbd8eff70bd669, type: 3}
+  - m_OriginalClip: {fileID: -203655887218126122, guid: bc04a3a66dc99452f805088af8b6b36c, type: 3}
+    m_OverrideClip: {fileID: -203655887218126122, guid: 0712a13843b264e789dcde76e676dea1, type: 3}
+  - m_OriginalClip: {fileID: -203655887218126122, guid: 4c064d9bf2b1c4a94a13532938bb637c, type: 3}
+    m_OverrideClip: {fileID: -203655887218126122, guid: 98da86cf4b1244891b0a7357d95eff69, type: 3}
