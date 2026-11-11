@@ -7,37 +7,25 @@ public class PlayerBehavior : MonoBehaviour
     public GameObject PlayerCamera;
     public float walkSpeed = 7.5f;
     public float sprintSpeed = 15f;
+
+    [Header("Player Footstep Audio (Rule 8)")]
+    public AudioSource footstepAudioSource;
+    public AudioClip footstepClip;
+
     private float currentSpeed;
     private float verticalRotation = 0f;
-
-    [Header("Pub Scene References")]
-    public GameObject Drawer;
-    public GameObject RegularCrosshair;
-    public GameObject TouchCrosshair;
-    public GameObject Drawertext;
-    public GameObject GunInDrawer;
-    public GameObject GunInHand;
-    public GameObject PickGunText;
-    public GameObject Alarm;
-    public MonsterBehavior monster;
-
+    private float nextFootstepTime = 0f;
     private CharacterController controller;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
 
-        // נעילת והעלמת סמן העכבר
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-
-        // שמירה על הנשק ביד אם השחקן כבר אסף אותו קודם
-        if (PersistentObjectManager.HasGun && GunInHand != null)
+        if (PlayerCamera == null && Camera.main != null)
         {
-            GunInHand.SetActive(true);
+            PlayerCamera = Camera.main.gameObject;
         }
 
-        // שיגור השחקן אל מחוץ למבנה עם הפנים קדימה (תומך גם בפאב וגם בבית החדש)
         if (SceneManager.GetActiveScene().name == "Outdoors")
         {
             if (PortalBehavior.isReturningToOutdoors)
@@ -58,24 +46,32 @@ public class PlayerBehavior : MonoBehaviour
 
     void Update()
     {
+        if (!MenuAndGameManager.GameHasStarted || Time.timeScale == 0f || HealthSystem.MatchEnded) return;
+
         HandleMovementAndLook();
 
-        // בדיקת אינטראקציה רק אם אנחנו בפאב
-        if (SceneManager.GetActiveScene().name == "Pub")
+        // סעיף 9: השחקן עצמו יכול לזרוק רימון פיזי בלחיצה על G!
+        if (Input.GetKeyDown(KeyCode.G) && MenuAndGameManager.SelectedRole != MenuAndGameManager.PlayerRole.Bystander)
         {
-            HandlePubInteractions();
+            SquadMemberAI.Team myTeam = (MenuAndGameManager.SelectedRole == MenuAndGameManager.PlayerRole.Police)
+                ? SquadMemberAI.Team.Police : SquadMemberAI.Team.Robber;
+
+            Transform cam = (PlayerCamera != null) ? PlayerCamera.transform : transform;
+            Vector3 startPos = cam.position + cam.forward * 0.8f;
+            Vector3 targetPos = cam.position + cam.forward * 11f;
+
+            GrenadeProjectile.LaunchPhysicalGrenade(startPos, targetPos, myTeam, "Commander Grenade");
         }
     }
 
     private void HandleMovementAndLook()
     {
-        // מהירות ריצה / הליכה
-        currentSpeed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed;
+        bool isSprinting = Input.GetKey(KeyCode.LeftShift);
+        currentSpeed = isSprinting ? sprintSpeed : walkSpeed;
 
         float dx = Input.GetAxis("Horizontal") * currentSpeed;
         float dz = Input.GetAxis("Vertical") * currentSpeed;
 
-        // סיבוב מצלמה ושחקן (כולל הגנה אם PlayerCamera ריק)
         float mouseX = Input.GetAxis("Mouse X") * 3f;
         float mouseY = Input.GetAxis("Mouse Y") * 3f;
 
@@ -84,93 +80,28 @@ public class PlayerBehavior : MonoBehaviour
         if (PlayerCamera != null)
         {
             verticalRotation -= mouseY;
-            verticalRotation = Mathf.Clamp(verticalRotation, -80f, 80f); // מונע היפוך של הראש
+            verticalRotation = Mathf.Clamp(verticalRotation, -80f, 80f);
             PlayerCamera.transform.localEulerAngles = new Vector3(verticalRotation, 0, 0);
         }
 
-        // פיזיקה ותנועה
         Vector3 motion = transform.TransformDirection(new Vector3(dx, 0, dz));
         motion.y = (controller != null && controller.isGrounded) ? -2f : -9.81f;
 
         if (controller != null && controller.enabled)
         {
-            CollisionFlags flags = controller.Move(motion * Time.deltaTime);
-            Debug.Log($"Pos: {transform.position} | Flags: {flags} | isGrounded: {controller.isGrounded}");
-            // Debug.Log($"Pos: {transform.position} | Motion: {motion} | dt: {Time.deltaTime} | CC Enabled: {controller.enabled}");
-            // controller.Move(motion * Time.deltaTime);
-        }
-    }
+            controller.Move(motion * Time.deltaTime);
 
-    private void HandlePubInteractions()
-    {
-        if (PlayerCamera == null) return;
-
-        RaycastHit hit;
-        bool hitSomething = Physics.Raycast(PlayerCamera.transform.position, PlayerCamera.transform.forward, out hit, 3f);
-
-        if (hitSomething)
-        {
-            if (Drawer != null && hit.collider.gameObject == Drawer)
+            // סעיף 8: השמעת צליל צעדים כשהשחקן הולך או רץ על הקרקע
+            bool isWalking = (Mathf.Abs(dx) > 0.1f || Mathf.Abs(dz) > 0.1f) && controller.isGrounded;
+            if (isWalking && Time.time >= nextFootstepTime)
             {
-                SetCrosshairState(isInteracting: true);
-                if (Drawertext != null) Drawertext.SetActive(true);
-
-                if (Input.GetKeyDown(KeyCode.E))
+                nextFootstepTime = Time.time + (isSprinting ? 0.30f : 0.46f);
+                if (footstepAudioSource != null)
                 {
-                    GameObject cabinet = Drawer.transform.parent.gameObject;
-                    Animator animator = cabinet.GetComponent<Animator>();
-                    if (animator != null)
-                    {
-                        animator.SetBool("Open", !animator.GetBool("Open"));
-                        if (animator.GetBool("Open") && GunInDrawer != null)
-                        {
-                            Collider gunCollider = GunInDrawer.GetComponent<Collider>();
-                            if (gunCollider != null) gunCollider.enabled = true;
-                        }
-                    }
+                    if (footstepClip != null) footstepAudioSource.PlayOneShot(footstepClip, 0.5f);
+                    else footstepAudioSource.Play();
                 }
-                return;
             }
-            else if (GunInDrawer != null && hit.collider.gameObject == GunInDrawer && GunInDrawer.activeSelf)
-            {
-                SetCrosshairState(isInteracting: true);
-                if (PickGunText != null) PickGunText.SetActive(true);
-
-                if (Input.GetKeyDown(KeyCode.E))
-                {
-                    GunInDrawer.SetActive(false);
-                    if (GunInHand != null) GunInHand.SetActive(true);
-                    if (Alarm != null)
-                    {
-                        Alarm.SetActive(true);
-                        AudioSource alarmAudio = Alarm.GetComponent<AudioSource>();
-                        if (alarmAudio != null) alarmAudio.Play();
-                    }
-                    if (monster != null) monster.startWalking();
-                    if (PickGunText != null) PickGunText.SetActive(false);
-                    PersistentObjectManager.HasGun = true;
-                }
-                return;
-            }
-        }
-
-        // איפוס תצוגה אם השחקן לא מביט באובייקט רלוונטי
-        SetCrosshairState(isInteracting: false);
-        if (Drawertext != null) Drawertext.SetActive(false);
-        if (PickGunText != null) PickGunText.SetActive(false);
-    }
-
-    private void SetCrosshairState(bool isInteracting)
-    {
-        if (RegularCrosshair != null) RegularCrosshair.SetActive(!isInteracting);
-        if (TouchCrosshair != null) TouchCrosshair.SetActive(isInteracting);
-    }
-
-    private void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        if (hit.gameObject.name != "Floor" && hit.gameObject.name != "Plane")
-        {
-            Debug.Log("Blocked while moving by: " + hit.gameObject.name);
         }
     }
 }
