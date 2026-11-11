@@ -184,5 +184,5 @@ Implemented cross-scene state management, physics-based line-of-sight interactio
 
 ---
 <div align="center">
-  <i>Architected & Developed by <b>David Benyakov</b> • Configured with custom Editor dependency pruning and a strict Unity <code>.gitignore</code>.</i>
+  <i>Architected & Developed by <b>David Ben Yakov</b> • Configured with custom Editor dependency pruning and a strict Unity <code>.gitignore</code>.</i>
 </div>
