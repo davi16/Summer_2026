@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/b79e6b8c-a0fd-414b-a8b6-54390bd258a5
+
 <div align="center">
 
 # 🏦 The Great Bank Heist — 3D Tactical Action & Multi-Role Game
@@ -21,7 +25,7 @@
 > **💡 Interactive Gameplay Recording:** Watch the full multi-role playthrough demonstrating the Robber heist, SWAT breach, Bystander survival, procedural vault architecture, and real-time 3D victory cutscenes.
 
 <!-- DRAG AND DROP YOUR FINAL .MP4 GAMEPLAY VIDEO FILE RIGHT BELOW THIS LINE IN GITHUB'S WEB EDITOR -->
-*🎥 [Gameplay Video Player — Drag & drop your `.mp4` recording here in GitHub Editor to embed native video player]*
+*🎥 https://github.com/user-attachments/assets/2a280b5b-1979-432d-8616-d36ad04c4c0f
 
 ---
 
